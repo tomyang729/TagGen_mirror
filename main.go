@@ -16,13 +16,12 @@ import (
           fmt.Print("Error loading .env file")
         }
 
-        CLIENT_ID := os.Getenv("CLIENT_ID")
-        SECRET_KEY := os.Getenv("SECRET_KEY")
-        client := clarifai.NewClient(CLIENT_ID, SECRET_KEY)
+        CLIENT_ID := os.Getenv("CLARIFAI_CLIENT_ID")
+        SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
+        client := clarifai.NewClient(CLARIFAI_CLIENT_ID, CLARIFAI_SECRET_KEY)
 
 func main() {
 	app := gin.Default()
-
 
         //clarify LIb Example
         info, err := client.Info()
