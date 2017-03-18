@@ -21,7 +21,7 @@ func main() {
 
 	// Get hashtags
 	// Params: img
-	app.GET("/", fetchTags)
+	app.GET("/fetch", fetchTags)
 
 	// Run on 5050 port
 	app.Run(":5050")
