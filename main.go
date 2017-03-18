@@ -1,46 +1,47 @@
 package main
 
 import (
-        "github.com/joho/godotenv"
-        "github.com/clarifai/clarifai-go"
-        "fmt"
-        "os"
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"html/template"
 	"net/http"
+	"os"
+
+	"github.com/clarifai/clarifai-go"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
-//load secret keys file
-        err := godotenv.Load()
-        if err != nil {
-          fmt.Print("Error loading .env file")
-        }
-
-        CLIENT_ID := os.Getenv("CLARIFAI_CLIENT_ID")
-        SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
-        client := clarifai.NewClient(CLARIFAI_CLIENT_ID, CLARIFAI_SECRET_KEY)
-
 func main() {
+	//load secret keys file
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Print("Error loading .env file")
+	}
+
+	CLIENT_ID := os.Getenv("CLARIFAI_CLIENT_ID")
+	SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
+	client := clarifai.NewClient(CLIENT_ID, SECRET_KEY)
+
 	app := gin.Default()
 
-        //clarify LIb Example
-        info, err := client.Info()
-        if err != nil {
-          fmt.Println(err)
-        } else {
-          fmt.Printf("%+v\n", info)
-        }
-        // Let's get some context about these images
-        urls := []string{"http://www.clarifai.com/img/metro-north.jpg", "http://www.clarifai.com/img/metro-north.jpg"}
-        // Give it to Clarifai to run their magic
-        tag_data, err := client.Tag(clarifai.TagRequest{URLs: urls})
+	//clarify LIb Example
+	info, err := client.Info()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("%+v\n", info)
+	}
+	// Let's get some context about these images
+	urls := []string{"http://www.clarifai.com/img/metro-north.jpg", "http://www.clarifai.com/img/metro-north.jpg"}
+	// Give it to Clarifai to run their magic
+	tag_data, err := client.Tag(clarifai.TagRequest{URLs: urls})
 
-        if err != nil {
-          fmt.Println("ERROR!")
-          fmt.Println(err)
-        } else {
-          fmt.Printf("DATA: %+v\n", tag_data) // See what we got!
-        }
+	if err != nil {
+		fmt.Println("ERROR!")
+		fmt.Println(err)
+	} else {
+		fmt.Printf("DATA: %+v\n", tag_data) // See what we got!
+	}
 
 	// Load static resources & templates
 	customTemplate := template.Must(template.New("main").ParseGlob("resources/templates/base/*.tmpl"))
@@ -67,8 +68,6 @@ func showHomePage(c *gin.Context) {
 func fetchTags(req *gin.Context) {
 	// get img from request
 	// pass in to Clarifi
-	// use labels to hit Instagram/Twitter endpoint to get hashtags 
+	// use labels to hit Instagram/Twitter endpoint to get hashtags
 	// return array of hastags
 }
-
-
