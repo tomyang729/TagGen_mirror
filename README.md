@@ -1,7 +1,7 @@
 # TagGen
 
 ## Running the app:
-cd $GOPATH/src/github.com/<github-user-name>/TagGen
+cd $GOPATH/src/github.com/github-user-name/TagGen
 
 
 go run main.go
