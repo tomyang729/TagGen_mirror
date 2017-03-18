@@ -4,6 +4,9 @@
 cd $GOPATH/src/github.com/github-user-name/TagGen
 
 
+go get .
+
+
 go run main.go
 
 
