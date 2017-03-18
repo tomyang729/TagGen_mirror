@@ -16,12 +16,15 @@ func main() {
 	app.Static("/static", "resources/static")
 
 	// Homepage endpoint
-	app.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title": "Home",
-		})
-	})
+	app.GET("/", showHomePage)
 
 	// Run on 5050 port
 	app.Run(":5050")
 }
+func showHomePage(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+		"title": "Home",
+	})
+}
+
+
