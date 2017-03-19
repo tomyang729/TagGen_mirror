@@ -128,3 +128,8 @@ func (p PairList) Less(i, j int) bool {
 	return p[i].Value.SuperSecretValue < p[j].Value.SuperSecretValue
 }
 func (p PairList) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+
+func stringArrToJSON(s []string) []byte {
+	jsonArray, _ := json.Marshal(s)
+	return jsonArray
+}
