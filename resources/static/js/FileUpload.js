@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Spinner } from 'elemental';
+import placeholder from '../images/placeholder.jpg';
 
 import '../css/FileUpload.css';
 
@@ -57,26 +58,23 @@ class FileUpload extends Component {
     let { dataURI, file } = this.state;
     let $imagePreview = null;
     if (dataURI) {
-      $imagePreview = (<img src={dataURI} />);
+      $imagePreview = (<img src={dataURI} className="picture"/>);
     } else {
-      $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
+      $imagePreview = (<div className="previewText"><h3>Simply upload a picture and get top most popular HashTags related
+			to your picture!</h3><img src={placeholder}></img></div>);
     }
 
 		let buttons = dataURI ? (
 			<div className="previewComponent">
-				<div className="fileUploadContent">
-					<div className="fileUploadButtons">
-						<Button onClick={this.triggerFileBrowser} disabled={this.state.loading}>
-							{this.state.loading && <Spinner />}
-							{'Change File'}
-						</Button>
-						<Button onClick={this.cancelUpload} type="link-cancel" disabled={this.state.loading}>Cancel</Button>
-					</div>
-				</div>
+				<Button onClick={this.triggerFileBrowser} type="link-cancel" disabled={this.state.loading}>
+					{this.state.loading && <Spinner />}
+					{'Change File'}
+				</Button>
+				<Button onClick={this.cancelUpload} type="link-cancel" disabled={this.state.loading}>Cancel</Button>
 			</div>
 		) : (
-			<Button onClick={this.triggerFileBrowser} disabled={this.props.disabled || this.state.loading}>
-				{this.state.loading ? <Spinner /> : null}
+				<Button type="button" className="btn btn-info button-general" onClick={this.triggerFileBrowser} disabled={this.props.disabled || this.state.loading}>
+					{this.state.loading ? <Spinner /> : null}
 				{'Upload File'}
 			</Button>
 		);
@@ -88,7 +86,7 @@ class FileUpload extends Component {
         </div>
 				{buttons}
 				<input style={{ display: 'none' }} type="file" ref="fileInput" onChange={this.handleChange} />
-        <Button onClick={(dataURI, file) => this.props.getHashTags(dataURI, file)}>Generate Hashtags!</Button>
+        <Button type="button" className="btn btn-lg btn-warning button-general" onClick={(dataURI, file) => this.props.getHashTags(dataURI, file)}>Get #Hashtags!</Button>
 			</div>
 		);
   }
