@@ -23,7 +23,7 @@ type TotalItems struct {
 	CurrentPage int `json:"current_page"`
 }
 
-func getPxTags(tags []string) ([]string, error) {
+func getPxTags(tags []ClarifyTag) ([]string, error) {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Print("Error loading .env file")
@@ -35,9 +35,9 @@ func getPxTags(tags []string) ([]string, error) {
 	allTags := make(map[string]*TagData)
 	for _, tag := range tags {
 		//make sure to change rpp back to 100
-		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + tag + "&tags=true&rpp=100&consumer_key=" + token)
+		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + tag.Name + "&tags=true&rpp=100&consumer_key=" + token)
 		if err != nil {
-			fmt.Print("Unable to retrieve photos for " + tag)
+			fmt.Print("Unable to retrieve photos for " + tag.Name)
 			return nil, err
 		}
 
