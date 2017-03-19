@@ -31,7 +31,7 @@ func (server *Server) Configure() {
 	// Homepage endpoint
 	app.GET("/", showHomePage)
 
-	app.GET("/fetch", fetchTags)
+	app.GET("/getTags", fetchTags)
 }
 
 
@@ -82,12 +82,17 @@ func fetchTags(c *gin.Context) {
 
 	responseString := string(bodyBytes)
 
-	tags, err := getImageTagsArray(responseString)
+	imageTags, err := getImageTagsArray(responseString)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
+	tags, err := getPxTags(imageTags)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
 
 	c.JSON(http.StatusOK, tags)
 }

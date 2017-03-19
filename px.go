@@ -76,7 +76,7 @@ func getPxTags(tags []ClarifyTag) ([]string, error) {
 	}
 
 	// var topTags []string
-	topTags := make([]string, 30)
+	topTags := make([]string, 0, 30)
 	sortedTags := sortAlgo(allTags, totalTags)
 	numOfTags := sortedTags.Len()
 	if numOfTags < 30 {
