@@ -23,24 +23,17 @@ class App extends Component {
     })
   }
 
-  _getHashTags(imageURI, file) {
+  _getHashTags(imageURI) {
     let url = 'http://localhost:5050/getTags/';
-    let formdata = new FormData();
-    let image = {
-      uri: imageURI,
-      name: file.name,
-      type: file.type || 'image-type/png'
-    };
-    formdata.append('image', image);
+    
     axios({
       method: 'post',
       url: url,
-      data: formdata
+      data: {image: imageURI}
     })
     .then(response => {
-      console.log(response);
       this.setState({
-        hashtags: response
+        hashtags: response.data
       });
     })
     .catch(error => {
@@ -56,7 +49,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1><b>Welcome to #TagGen!</b></h1>
         </div>
-        <div class="container-fluid main-container">
+        <div className="container-fluid main-container">
           <FileUpload getHashTags={this._getHashTags} />
           <HashTags
             childClassName="primary"

@@ -54,6 +54,11 @@ class FileUpload extends Component {
 		});
 	}
 
+	handleGetHashTags(e) {
+		e.preventDefault();
+		this.props.getHashTags(this.state.dataURI);
+	}
+
   render() {
     let { dataURI, file } = this.state;
     let $imagePreview = null;
@@ -73,7 +78,7 @@ class FileUpload extends Component {
 				<Button onClick={this.cancelUpload} type="link-cancel" disabled={this.state.loading}>Cancel</Button>
 			</div>
 		) : (
-				<Button type="button" className="btn btn-info button-general" onClick={this.triggerFileBrowser} disabled={this.props.disabled || this.state.loading}>
+				<Button type="default-primary" className="btn btn-info button-general" onClick={this.triggerFileBrowser} disabled={this.props.disabled || this.state.loading}>
 					{this.state.loading ? <Spinner /> : null}
 				{'Upload File'}
 			</Button>
@@ -86,7 +91,7 @@ class FileUpload extends Component {
         </div>
 				{buttons}
 				<input style={{ display: 'none' }} type="file" ref="fileInput" onChange={this.handleChange} />
-        <Button type="button" className="btn btn-lg btn-warning button-general" onClick={(dataURI, file) => this.props.getHashTags(dataURI, file)}>Get #Hashtags!</Button>
+        <Button type="primary" className="btn btn-lg btn-warning button-general" onClick={(e) => this.handleGetHashTags(e)}>Get #Hashtags!</Button>
 			</div>
 		);
   }
