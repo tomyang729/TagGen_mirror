@@ -4,6 +4,7 @@ package main
 import (
   "encoding/json"
   "sort"
+  "fmt"
 )
 
 type ClarifaiObj struct {
@@ -21,6 +22,25 @@ type ClarifyTag struct {
 
 type TagsObj struct {
   Tags []ClarifyTag `json:"concepts"`
+}
+
+func getImageTagsArray(jsonStr string) ([]ClarifyTag, error) {
+  var tagsData ClarifaiObj
+  rawIn := json.RawMessage(jsonStr)
+
+  bytes, err := rawIn.MarshalJSON()
+  if err != nil {
+    return nil, err
+  }
+
+  err = json.Unmarshal(bytes, &tagsData)
+  if err != nil {
+    return nil, err
+  }
+
+  tagsArray := tagsData.Outputs[0].Data.Tags
+
+  return filterImageTags(tagsArray), nil
 }
 
 func filterImageTags(tags []ClarifyTag) []ClarifyTag {
