@@ -1,7 +1,5 @@
 package main
 
-import "encoding/json"
-
 type ClarifaiObj struct {
 	Outputs []ClarifaiData `json:"outputs"`
 }
