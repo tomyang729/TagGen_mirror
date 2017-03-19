@@ -11,6 +11,9 @@ class FileUpload extends Component {
       dataURI: null,
       loading: false
     };
+    this.triggerFileBrowser = this.triggerFileBrowser.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.cancelUpload = this.cancelUpload.bind(this);
   }
 
   componentDidMount () {
@@ -40,12 +43,6 @@ class FileUpload extends Component {
 				file: file,
 				dataURI: upload.target.result
 			});
-			if (typeof this.props.onChange === 'function') {
-				this.props.onChange(e, {
-					file: file,
-					dataURI: upload.target.result
-				});
-			}
 		};
 	}
 
@@ -54,13 +51,10 @@ class FileUpload extends Component {
 			dataURI: null,
 			file: {},
 		});
-		this.props.onChange(e, null);
 	}
 
   render() {
     let { dataURI, file } = this.state;
-
-    let { dataURI } = this.state;
     let $imagePreview = null;
     if (dataURI) {
       $imagePreview = (<img src={dataURI} />);
@@ -93,8 +87,8 @@ class FileUpload extends Component {
           {$imagePreview}
         </div>
 				{buttons}
-				<input style={{ display: 'none' }} type="file" ref="fileInput" onChange={this.handleChange} {...props} />
-        <Button onClick={this.props.getHashTags(dataURI, file)}>Generate Hashtags!</Button>
+				<input style={{ display: 'none' }} type="file" ref="fileInput" onChange={this.handleChange} />
+        <Button onClick={(dataURI, file) => this.props.getHashTags(dataURI, file)}>Generate Hashtags!</Button>
 			</div>
 		);
   }
@@ -102,6 +96,7 @@ class FileUpload extends Component {
 
 FileUpload.propTypes = {
   disabled: React.PropTypes.bool,
-	onChange: React.PropTypes.func,
   getHashTags: React.PropTypes.func.isRequired
 }
+
+export default FileUpload;

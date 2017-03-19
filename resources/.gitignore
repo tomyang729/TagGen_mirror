@@ -1,6 +1,6 @@
 # dependencies
 /node_modules
-/bin
+/js/bin
 
 # testing
 /coverage

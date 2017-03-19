@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"bytes"
 	"encoding/json"
 	"html/template"
@@ -44,14 +45,15 @@ func showHomePage(c *gin.Context) {
 
 func fetchTagsForPost(c *gin.Context) {
 
-	image := c.PostForm("image")
+	// image := c.PostForm("image")
 	uri := c.PostForm("uri")
-	if image == "" {
-		c.JSON(http.StatusBadRequest, "image parameter was not included")
-		return
-	}
+	// if image == "" {
+	// 	c.JSON(http.StatusBadRequest, "image parameter was not included")
+	// 	return
+	// }
 
 	req, err := getRequestBody(uri)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return

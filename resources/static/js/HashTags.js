@@ -6,23 +6,25 @@ class HashTags extends Component {
     const { hashtags, handleClearHashtag, childClassName } = this.props;
     return (
       <div>
-        hashtags.map((hashtag, i) => {
+        {
+          hashtags.map((hashtag, i) => (
           <Pill
-          key={i}
-          label={hashtag}
-          type={childClassName}
-          onClear={hashtag => handleClearHashtag(hashtag)}
+            key={i}
+            label={hashtag}
+            type={childClassName}
+            onClear={hashtag => handleClearHashtag(hashtag)}
           />
-        })
+        ))
+      }
       </div>
-    )
+    );
   }
 }
 
 HashTags.propTypes = {
   childClassName: React.PropTypes.string.isRequired,
   hashtags: React.PropTypes.array.isRequired,
-  handleClearHashtag: React.PropTypes.func,isRequired
+  handleClearHashtag: React.PropTypes.func.isRequired
 };
 
 HashTags.defaultProps = {
