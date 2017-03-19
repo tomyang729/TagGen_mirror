@@ -9,7 +9,7 @@ import (
 
 type Server struct {
     app *gin.Engine
-    // Can have db, etc in the future
+    client *clarifai.Client
 }
 
 func (server *Server) Configure() {
@@ -24,8 +24,6 @@ func (server *Server) Configure() {
     // Homepage endpoint
     app.GET("/", showHomePage)
 
-    // Get hashtags
-    // Params: img
     app.GET("/fetch", fetchTags)
 }
 
@@ -36,8 +34,11 @@ func showHomePage(c *gin.Context) {
     })
 }
 
+/*
+   Get hashtags
+   Param: img
+ */
 func fetchTags(c *gin.Context) {
-    _ = clarifai.NewClient("a", "b") // just so it will compile
     // get img from request
     // pass in to Clarifi
     // use labels to hit Instagram/Twitter endpoint to get hashtags
