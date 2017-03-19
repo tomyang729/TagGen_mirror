@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"bytes"
 	"encoding/json"
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"bytes"
+	"strings"
 
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
@@ -43,18 +44,26 @@ func showHomePage(c *gin.Context) {
 	})
 }
 
+type FetchTagsRequest struct {
+	Image string `json:"image"`
+}
 func fetchTagsForPost(c *gin.Context) {
 
 	// image := c.PostForm("image")
-	uri := c.PostForm("uri")
+	// uri := c.PostForm("uri")
+	body, success := ioutil.ReadAll(c.Request.Body)
+	if success != nil {}
+	var request FetchTagsRequest
+	success = json.Unmarshal(body, &request)
 	// if image == "" {
 	// 	c.JSON(http.StatusBadRequest, "image parameter was not included")
 	// 	return
 	// }
 
-	req, err := getRequestBody(uri)
+	req, err := getRequestBody(request.Image)
 
 	if err != nil {
+		fmt.Print("unable to get request body")
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
@@ -62,12 +71,15 @@ func fetchTagsForPost(c *gin.Context) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Print("failed accessing client")
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		fmt.Print("bad response code from the api: ")
+		fmt.Print(resp.StatusCode)
 		c.JSON(http.StatusBadRequest, "Error getting response from clarifai API")
 		return
 	}
@@ -166,13 +178,14 @@ func fetchTags(c *gin.Context) {
    }
 
 */
+
 func getRequestBody(input string) (*http.Request, error) {
 	// for now, figure out how to make it one struct
-	type Url struct {
-		Url string `json:"url"`
+	type Base struct {
+		Value string `json:"base64"`
 	}
 	type Image struct {
-		Image Url `json:"image"`
+		Image Base `json:"image"`
 	}
 	type Data struct {
 		Data Image `json:"data"`
@@ -182,20 +195,22 @@ func getRequestBody(input string) (*http.Request, error) {
 	}
 
 	// Create request body struct
-	url := Url{input}
-	image := Image{url}
+	base := Base{strings.SplitN(input, ",", 2)[1]}
+	image := Image{base}
 	data := Data{image}
 	inputs := make([]Data, 0, 1)
 	inputs = append(inputs, data)
 	reqBody := RequestBody{inputs}
+	fmt.Print(reqBody)
+	//reqBodyBytes, err := json.Marshal(reqBody)
+	//if err != nil {
+		//return nil, err
+	//}
 
-	reqBodyBytes, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, err
-	}
-
-	body := bytes.NewReader(reqBodyBytes)
-	req, err := http.NewRequest("POST", clarifaiApi, body)
+	b := new(bytes.Buffer)
+  err := json.NewEncoder(b).Encode(reqBody)
+	req, err := http.NewRequest("POST", clarifaiApi, b)
+	fmt.Print(req)
 	if err != nil {
 		return nil, err
 	}
