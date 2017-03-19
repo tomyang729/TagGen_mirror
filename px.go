@@ -8,6 +8,8 @@ import (
 	"os"
 	"sort"
 
+	"strings"
+
 	"github.com/joho/godotenv"
 )
 
@@ -35,14 +37,14 @@ func getPxTags(tags []ClarifyTag) ([]string, error) {
 	allTags := make(map[string]*TagData)
 	for _, tag := range tags {
 		//make sure to change rpp back to 100
-		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + tag.Name + "&tags=true&rpp=50&consumer_key=" + token)
+		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + strings.Replace(tag.Name, " ", "%20", -1) + "&tags=true&rpp=10&consumer_key=" + token)
 		if err != nil {
 			fmt.Print("Unable to retrieve photos for " + tag.Name)
 			return nil, err
 		}
 
 		body, err := ioutil.ReadAll(resp.Body)
-		// fmt.Printf("%s\n", body)
+		fmt.Printf("%s\n", body)
 		rawIn := json.RawMessage(body)
 		bytes, err := rawIn.MarshalJSON()
 		// fmt.Printf("%s\n", bytes)
@@ -51,11 +53,13 @@ func getPxTags(tags []ClarifyTag) ([]string, error) {
 			return nil, err
 		}
 		var response Photos
+		fmt.Printf("%s\n", bytes)
 		parseErr := json.Unmarshal(bytes, &response)
-		// fmt.Print(response.Data)
+		fmt.Print(response.Data)
 		if parseErr != nil {
-			fmt.Print("Unable to parse the px response\n")
-			fmt.Print(bytes)
+			fmt.Printf("%s\n", bytes)
+			fmt.Print("Unable to parse the px response for " + tag.Name + "\n")
+			// fmt.Print(bytes)
 			return nil, err
 		}
 
