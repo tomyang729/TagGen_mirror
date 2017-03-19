@@ -6,6 +6,7 @@ import (
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+        "encoding/json"
 )
 
 func main() {
@@ -14,7 +15,7 @@ func main() {
 	client := getClient()
 
 	server := &Server{
-		app: app,
+		app:    app,
 		client: client,
 	}
 
@@ -29,7 +30,7 @@ func getClient() *clarifai.Client {
 	//load secret keys file
 	err := godotenv.Load()
 	if err != nil {
-    	fmt.Print("Error loading .env file")
+		fmt.Print("Error loading .env file")
 	}
 
 	CLIENT_ID := os.Getenv("CLARIFAI_CLIENT_ID")
