@@ -43,13 +43,15 @@ func showHomePage(c *gin.Context) {
 }
 
 func fetchTagsForPost(c *gin.Context) {
-	image, hasField := c.GetPostForm("image")
-	if image == "" || !hasField {
+
+	image := c.PostForm("image")
+	uri := c.PostForm("uri")
+	if image == "" {
 		c.JSON(http.StatusBadRequest, "image parameter was not included")
 		return
 	}
 
-	req, err := getRequestBody(image)
+	req, err := getRequestBody(uri)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
