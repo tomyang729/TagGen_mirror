@@ -1,5 +1,7 @@
 const path = require('path');
 
+//const CleanCSSPlugin = require("less-plugin-clean-css");
+
 module.exports = {
   entry: './static/js/index.js',
   output: {
@@ -8,7 +10,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.css$/, loaders: ["style-loader", "css-loader"] },
+      { test: /\.(css|less)$/, loaders: ["style-loader", "css-loader", "less-loader"] },
       {
         exclude: [
           /\.html$/,
