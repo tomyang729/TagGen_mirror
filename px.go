@@ -35,7 +35,7 @@ func getPxTags(tags []ClarifyTag) ([]string, error) {
 	allTags := make(map[string]*TagData)
 	for _, tag := range tags {
 		//make sure to change rpp back to 100
-		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + tag.Name + "&tags=true&rpp=100&consumer_key=" + token)
+		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + tag.Name + "&tags=true&rpp=50&consumer_key=" + token)
 		if err != nil {
 			fmt.Print("Unable to retrieve photos for " + tag.Name)
 			return nil, err
@@ -54,7 +54,8 @@ func getPxTags(tags []ClarifyTag) ([]string, error) {
 		parseErr := json.Unmarshal(bytes, &response)
 		// fmt.Print(response.Data)
 		if parseErr != nil {
-			fmt.Print("Unable to parse the px response")
+			fmt.Print("Unable to parse the px response\n")
+			fmt.Print(bytes)
 			return nil, err
 		}
 
