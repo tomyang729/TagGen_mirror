@@ -5,6 +5,7 @@ import (
     "html/template"
     "net/http"
     "github.com/clarifai/clarifai-go"
+    "fmt"
 )
 
 type Server struct {
@@ -24,7 +25,7 @@ func (server *Server) Configure() {
     // Homepage endpoint
     app.GET("/", showHomePage)
 
-    app.GET("/fetch", fetchTags)
+    app.GET("/fetch", server.fetchTags)
 }
 
 
@@ -36,12 +37,33 @@ func showHomePage(c *gin.Context) {
 
 /*
    Get hashtags
-   Param: img
+   Param: imgURL
  */
-func fetchTags(c *gin.Context) {
-    // get img from request
-    // pass in to Clarifi
-    // use labels to hit Instagram/Twitter endpoint to get hashtags
-    // return array of hastags
+func (s *Server) fetchTags(c *gin.Context) {
+
+    //urls := []string{"http://placekitten.com/200/300"}
+    //tag_data, err := s.client.Tag(clarifai.TagRequest{ URLs: urls })
+
+    //resp, err := http.Post("https://api.instagram.com/v1/tags/search?q=" + tag + "&access_token=" + token)
+
+    //if err != nil {
+    //    fmt.Println(err)
+    //} else {
+    //    fmt.Printf("%+v\n", resp) // See what we got!
+    //}
+
+//client := &http.Client{}
+
+//req, err := http.NewRequest("POST", "https://api.clarifai.com/v2/models/aaa03c23b3724a16a56b629203edc62c/outputs", nil)
+
+//req.Header.Add("Authorization", `Bearer ThzzqYyVARtJdLbTQDwfRpa1FOk8w6`)
+//req.Header.Add("Content-Type", `application/json`)
+//resp, err := client.Do(req)
+
+
+
+// TODO:
+// get img url from c and then get JSON tags from Clarifai and pass in to Daria's function
+
 }
 
