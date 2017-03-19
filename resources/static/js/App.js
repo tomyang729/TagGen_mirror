@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from '../images/logo.svg';
+import logo from '../images/hashtag1.png';
 import { Button } from 'elemental';
 import HashTags from './HashTags';
 import FileUpload from './FileUpload';
@@ -23,24 +23,17 @@ class App extends Component {
     })
   }
 
-  _getHashTags(imageURI, file) {
+  _getHashTags(imageURI) {
     let url = 'http://localhost:5050/getTags/';
-    let formdata = new FormData();
-    let image = {
-      uri: imageURI,
-      name: file.name,
-      type: file.type || 'image-type/png'
-    };
-    formdata.append('image', image);
+    
     axios({
       method: 'post',
       url: url,
-      data: formdata
+      data: {image: imageURI}
     })
     .then(response => {
-      console.log(response);
       this.setState({
-        hashtags: response
+        hashtags: response.data
       });
     })
     .catch(error => {
@@ -51,16 +44,19 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css"></link>
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+          <h1><b>Welcome to #TagGen!</b></h1>
         </div>
-        <FileUpload getHashTags={this._getHashTags}/>
-        <HashTags
-          childClassName="primary"
-          hashtags={this.state.hashtags}
-          handleClearHashtag={this._handleClearHashtag}
-        />
+        <div className="container-fluid main-container">
+          <FileUpload getHashTags={this._getHashTags} />
+          <HashTags
+            childClassName="primary"
+            hashtags={this.state.hashtags}
+            handleClearHashtag={this._handleClearHashtag}
+          />
+        </div>
       </div>
     );
   }
