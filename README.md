@@ -4,10 +4,13 @@
 cd $GOPATH/src/github.com/github-user-name/TagGen
 
 
-go get .
+go get [all dependencies]
 
 
-go run main.go
+go build
+
+
+./TagGen
 
 
 open http://localhost:5050/
