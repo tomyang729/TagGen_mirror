@@ -42,7 +42,7 @@ func getPxTags(tags []ClarifyTag) ([]string, error) {
 		}
 
 		body, err := ioutil.ReadAll(resp.Body)
-		fmt.Printf("%s\n", body)
+		// fmt.Printf("%s\n", body)
 		rawIn := json.RawMessage(body)
 		bytes, err := rawIn.MarshalJSON()
 		// fmt.Printf("%s\n", bytes)
@@ -100,15 +100,15 @@ func sortAlgo(wordFrequencies map[string]*TagData, totalTags int) PairList {
 		ratioUses := float64(pl[i].Value.TagUses) / float64(totalTags)
 		pl[i].Value.SuperSecretValue = ratioUses * float64(pl[i].Value.TotalViews)
 
-		if pl[i].Value.TagUses > 10 {
-			fmt.Print(pl[i].Key + " - Tag \n")
-			fmt.Print(pl[i].Value.SuperSecretValue)
-			fmt.Print(" - algo value \n")
-			fmt.Print(pl[i].Value.TotalViews)
-			fmt.Print(" - Total views \n")
-			fmt.Print(pl[i].Value.TagUses)
-			fmt.Print(" - Tag Uses \n \n \n")
-		}
+		// if pl[i].Value.TagUses > 10 {
+		// 	fmt.Print(pl[i].Key + " - Tag \n")
+		// 	fmt.Print(pl[i].Value.SuperSecretValue)
+		// 	fmt.Print(" - algo value \n")
+		// 	fmt.Print(pl[i].Value.TotalViews)
+		// 	fmt.Print(" - Total views \n")
+		// 	fmt.Print(pl[i].Value.TagUses)
+		// 	fmt.Print(" - Tag Uses \n \n \n")
+		// }
 		i++
 	}
 	sort.Sort(sort.Reverse(pl))
