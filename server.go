@@ -3,13 +3,13 @@ package main
 import (
     "github.com/gin-gonic/gin"
     "html/template"
-    "net/http"
     "github.com/clarifai/clarifai-go"
+    "net/http"
 )
 
 type Server struct {
     app *gin.Engine
-    // Can have db, etc in the future
+    client *clarifai.Client	 
 }
 
 func (server *Server) Configure() {
