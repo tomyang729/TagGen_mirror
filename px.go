@@ -23,10 +23,11 @@ type TotalItems struct {
 	CurrentPage int `json:"current_page"`
 }
 
-func getPxTags(tags []string) []string {
+func getPxTags(tags []string) ([]string, error) {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Print("Error loading .env file")
+		return nil, err
 	}
 	token := os.Getenv("PX_CONSUMER_KEY")
 
@@ -37,6 +38,7 @@ func getPxTags(tags []string) []string {
 		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + tag + "&tags=true&rpp=100&consumer_key=" + token)
 		if err != nil {
 			fmt.Print("Unable to retrieve photos for " + tag)
+			return nil, err
 		}
 
 		body, err := ioutil.ReadAll(resp.Body)
@@ -46,12 +48,14 @@ func getPxTags(tags []string) []string {
 		// fmt.Printf("%s\n", bytes)
 		if err != nil {
 			fmt.Print("something went bad\n")
+			return nil, err
 		}
 		var response Photos
 		parseErr := json.Unmarshal(bytes, &response)
 		// fmt.Print(response.Data)
 		if parseErr != nil {
 			fmt.Print("Unable to parse the px response")
+			return nil, err
 		}
 
 		for _, photo := range response.Data {
@@ -85,7 +89,7 @@ func getPxTags(tags []string) []string {
 		}
 	}
 
-	return topTags
+	return topTags, nil
 }
 
 func sortAlgo(wordFrequencies map[string]*TagData, totalTags int) PairList {
@@ -128,3 +132,8 @@ func (p PairList) Less(i, j int) bool {
 	return p[i].Value.SuperSecretValue < p[j].Value.SuperSecretValue
 }
 func (p PairList) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+
+func stringArrToJSON(s []string) []byte {
+	jsonArray, _ := json.Marshal(s)
+	return jsonArray
+}
