@@ -4,6 +4,11 @@ import { Pill } from 'elemental';
 import '../css/HashTags.css';
 
 class HashTags extends Component {
+  _handleClearHashTag(e, hashtag) {
+    e.preventDefault();
+    this.props.handleClearHashtag(hashtag);
+  }
+
   render() {
     const { hashtags, handleClearHashtag, childClassName } = this.props;
     return (
@@ -14,7 +19,7 @@ class HashTags extends Component {
             key={i}
             label={hashtag}
             type={childClassName}
-            onClear={hashtag => handleClearHashtag(hashtag)}
+            onClear={e => this._handleClearHashTag(e, hashtag)}
           />
         ))
       }
