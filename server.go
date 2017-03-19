@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"html/template"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
-	"html/template"
-	"net/http"
-	"io/ioutil"
 )
 
 const (
@@ -32,8 +33,8 @@ func (server *Server) Configure() {
 	app.GET("/", showHomePage)
 
 	app.GET("/getTags", fetchTags)
+	app.POST("/getTags", fetchTagsForPost)
 }
-
 
 func showHomePage(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
@@ -41,6 +42,54 @@ func showHomePage(c *gin.Context) {
 	})
 }
 
+func fetchTagsForPost(c *gin.Context) {
+	image, hasField := c.GetPostForm("image")
+	if image == "" || !hasField {
+		c.JSON(http.StatusBadRequest, "image parameter was not included")
+		return
+	}
+
+	req, err := getRequestBody(image)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		c.JSON(http.StatusBadRequest, "Error getting response from clarifai API")
+		return
+	}
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	responseString := string(bodyBytes)
+
+	imageTags, err := getImageTagsArray(responseString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	tags, err := getPxTags(imageTags)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, tags)
+}
 
 /*
    Get hashtags
@@ -97,21 +146,20 @@ func fetchTags(c *gin.Context) {
 	c.JSON(http.StatusOK, tags)
 }
 
-
 /*
-    Clarifai API request object body type:
+   Clarifai API request object body type:
 
-    {
-        "inputs": [
-           {
-                "data": {
-                    "image": {
-                        "url": "image-url"
-                    }
-                }
-            }
-        ]
-    }
+   {
+       "inputs": [
+          {
+               "data": {
+                   "image": {
+                       "url": "image-url"
+                   }
+               }
+           }
+       ]
+   }
 
 */
 func getRequestBody(input string) (*http.Request, error) {
