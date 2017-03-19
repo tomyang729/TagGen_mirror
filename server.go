@@ -3,11 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
+	"io/ioutil"
 )
 
 const (
@@ -64,11 +64,32 @@ func fetchTags(c *gin.Context) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 	defer resp.Body.Close()
 
-	c.JSON(http.StatusOK, "Success!")
+	if resp.StatusCode != http.StatusOK {
+		c.JSON(http.StatusBadRequest, "Error getting response from clarifai API")
+		return
+	}
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	responseString := string(bodyBytes)
+
+	tags, err := getImageTagsArray(responseString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+
+	c.JSON(http.StatusOK, tags)
 }
 
 

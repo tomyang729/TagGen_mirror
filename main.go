@@ -7,7 +7,6 @@ import (
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-        "encoding/json"
 )
 
 func main() {
