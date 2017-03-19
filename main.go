@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -10,6 +11,20 @@ import (
 )
 
 func main() {
+
+	// NOTE: just for testing quinn's function
+	// fmt.Print("started getting hashtags\n")
+	// tags := make([]string, 3)
+	// tags[0] = "redbull"
+	// tags[1] = "starbucks"
+	// tags[2] = "coffee"
+	// // tags[3] = "tree"
+	// // tags[4] = "outside"
+	// retrievedTags := getPxTags(tags)
+	// for _, string := range retrievedTags {
+	// 	fmt.Print(string + "\n")
+	// }
+	// fmt.Print("finished getting hashtags")
 
 	app := gin.Default()
 	client := getClient()
@@ -23,6 +38,7 @@ func main() {
 
 	// Run on 5050 port
 	app.Run(":5050")
+
 }
 
 func getClient() *clarifai.Client {
