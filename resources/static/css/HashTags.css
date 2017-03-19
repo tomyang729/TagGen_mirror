@@ -1,0 +1,9 @@
+.HashTags {
+    display: inline-block;
+    max-width: 500px;
+    margin: 10px;
+    
+    .pill {
+        margin: 5px;
+    }
+}

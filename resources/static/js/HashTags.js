@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { Pill } from 'elemental';
 
+import '../css/HashTags.css';
+
 class HashTags extends Component {
   render() {
     const { hashtags, handleClearHashtag, childClassName } = this.props;
     return (
-      <div>
+        <div className="HashTags">
         {
           hashtags.map((hashtag, i) => (
-          <Pill
+          <Pill className="pill"
             key={i}
             label={hashtag}
             type={childClassName}
@@ -22,13 +24,13 @@ class HashTags extends Component {
 }
 
 HashTags.propTypes = {
-  childClassName: React.PropTypes.string.isRequired,
-  hashtags: React.PropTypes.array.isRequired,
-  handleClearHashtag: React.PropTypes.func.isRequired
+  childClassName: React.PropTypes.string,
+  hashtags: React.PropTypes.array,
+  handleClearHashtag: React.PropTypes.func
 };
 
 HashTags.defaultProps = {
-  hashtags: []
+  hashtags: ["dog", "cat", "house", "computer", "bank", "banana"]
 };
 
 export default HashTags;
