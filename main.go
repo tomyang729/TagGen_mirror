@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -26,11 +25,22 @@ func main() {
 	// fmt.Print("finished getting hashtags")
 
 	app := gin.Default()
-	client := getClient()
+
+	//load secret file
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Print("Error loading .env file")
+	}
+	CLARIFAI_ID := os.Getenv("CLARIFAI_CLIENT_ID")
+	CLARIFAI_SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
+
+	clarifai_token := getAccesToken(CLARIFAI_ID, CLARIFAI_SECRET_KEY)
+	client := getClient(CLARIFAI_ID, CLARIFAI_SECRET_KEY)
 
 	server := &Server{
 		app:    app,
 		client: client,
+		clarifai_token: clarifai_token,
 	}
 
 	server.Configure()
@@ -40,15 +50,8 @@ func main() {
 
 }
 
-func getClient() *clarifai.Client {
+func getClient(CLIENT_ID string, SECRET_KEY string) *clarifai.Client {
 
-	//load secret keys file
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Print("Error loading .env file")
-	}
-
-	CLIENT_ID := os.Getenv("CLARIFAI_CLIENT_ID")
-	SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
 	return clarifai.NewClient(CLIENT_ID, SECRET_KEY)
 }
+

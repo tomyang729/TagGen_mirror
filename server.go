@@ -11,6 +11,8 @@ import (
 
 	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
+	"os"
+	"net/url"
 )
 
 const (
@@ -20,7 +22,14 @@ const (
 type Server struct {
 	app    *gin.Engine
 	client *clarifai.Client
+	clarifai_token AccessToken
 }
+
+type AccessToken struct {
+	Token string `json:"access_token"`
+	ExpiresIn int `json:"expires_in"`
+}
+
 
 func (server *Server) Configure() {
 	app := server.app
@@ -49,8 +58,8 @@ type FetchTagsRequest struct {
 }
 func fetchTagsForPost(c *gin.Context) {
 
-	// image := c.PostForm("image")
-	// uri := c.PostForm("uri")
+
+
 	body, success := ioutil.ReadAll(c.Request.Body)
 	if success != nil {}
 	var request FetchTagsRequest
@@ -77,9 +86,10 @@ func fetchTagsForPost(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 
+
 	if resp.StatusCode != http.StatusOK {
 		fmt.Print("bad response code from the api: ")
-		fmt.Print(resp.StatusCode)
+		//fmt.Print(resp.StatusCode)
 		c.JSON(http.StatusBadRequest, "Error getting response from clarifai API")
 		return
 	}
@@ -180,6 +190,10 @@ func fetchTags(c *gin.Context) {
 */
 
 func getRequestBody(input string) (*http.Request, error) {
+	CLARIFAI_ID := os.Getenv("CLARIFAI_CLIENT_ID")
+	CLARIFAI_SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
+
+	clarifai_token := getAccesToken(CLARIFAI_ID, CLARIFAI_SECRET_KEY)
 	// for now, figure out how to make it one struct
 	type Base struct {
 		Value string `json:"base64"`
@@ -208,14 +222,60 @@ func getRequestBody(input string) (*http.Request, error) {
 	//}
 
 	b := new(bytes.Buffer)
-  err := json.NewEncoder(b).Encode(reqBody)
+	err := json.NewEncoder(b).Encode(reqBody)
 	req, err := http.NewRequest("POST", clarifaiApi, b)
 	fmt.Print(req)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", `Bearer ThzzqYyVARtJdLbTQDwfRpa1FOk8w6`)
+	req.Header.Add("Authorization", `Bearer ` + clarifai_token.Token)
 	req.Header.Add("Content-Type", `application/json`)
 	return req, nil
+}
+
+func getAccesToken(CLIENT_ID string, SECRET_KEY string) AccessToken {
+
+	responseData := authRequest(CLIENT_ID, SECRET_KEY)
+	var token AccessToken
+	rawIn := json.RawMessage(responseData)
+
+	bytes, err := rawIn.MarshalJSON()
+	if err != nil {
+		fmt.Print("\nERROR Parsing authentication response")
+		panic(err)
+	}
+
+	err = json.Unmarshal(bytes, &token)
+	if err != nil {
+		fmt.Print("\nERROR Parsing authentication json string")
+		panic(err)
+	}
+	fmt.Print("\nRESULTS: ")
+	fmt.Print(token.Token)
+	fmt.Print(token.ExpiresIn)
+
+	return token
+}
+
+func authRequest(CLIENT_ID string, SECRET_KEY string) []byte {
+
+	var auth_url = "https://api.clarifai.com/v1/token"
+	resp, err := http.PostForm(auth_url, url.Values{"grant_type": {"client_credentials"},
+		"client_id": { CLIENT_ID },
+		"client_secret": { SECRET_KEY } })
+
+	fmt.Print("\nAuthentication Request constructed and sent")
+
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	responseData,err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Print("\nERROR parsing body request")
+	}
+
+	return responseData
 }
