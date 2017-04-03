@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"bytes"
 	"strings"
-
-	"github.com/clarifai/clarifai-go"
 	"github.com/gin-gonic/gin"
 	"os"
 	"net/url"
@@ -21,8 +19,6 @@ const (
 
 type Server struct {
 	app    *gin.Engine
-	client *clarifai.Client
-	clarifai_token AccessToken
 }
 
 type AccessToken struct {
