@@ -60,10 +60,6 @@ func fetchTagsForPost(c *gin.Context) {
 	if success != nil {}
 	var request FetchTagsRequest
 	success = json.Unmarshal(body, &request)
-	// if image == "" {
-	// 	c.JSON(http.StatusBadRequest, "image parameter was not included")
-	// 	return
-	// }
 
 	req, err := getRequestBody(request.Image)
 
@@ -85,7 +81,7 @@ func fetchTagsForPost(c *gin.Context) {
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Print("bad response code from the api: ")
-		//fmt.Print(resp.StatusCode)
+		fmt.Print(resp.StatusCode)
 		c.JSON(http.StatusBadRequest, "Error getting response from clarifai API")
 		return
 	}
@@ -115,8 +111,6 @@ func fetchTagsForPost(c *gin.Context) {
 
 /*
    Get hashtags
-   Param: imgURL
-
 */
 func fetchTags(c *gin.Context) {
 	params := c.Request.URL.Query()
@@ -168,23 +162,6 @@ func fetchTags(c *gin.Context) {
 	c.JSON(http.StatusOK, tags)
 }
 
-/*
-   Clarifai API request object body type:
-
-   {
-       "inputs": [
-          {
-               "data": {
-                   "image": {
-                       "url": "image-url"
-                   }
-               }
-           }
-       ]
-   }
-
-*/
-
 func getRequestBody(input string) (*http.Request, error) {
 	CLARIFAI_ID := os.Getenv("CLARIFAI_CLIENT_ID")
 	CLARIFAI_SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
@@ -212,10 +189,6 @@ func getRequestBody(input string) (*http.Request, error) {
 	inputs = append(inputs, data)
 	reqBody := RequestBody{inputs}
 	fmt.Print(reqBody)
-	//reqBodyBytes, err := json.Marshal(reqBody)
-	//if err != nil {
-		//return nil, err
-	//}
 
 	b := new(bytes.Buffer)
 	err := json.NewEncoder(b).Encode(reqBody)
