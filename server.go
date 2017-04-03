@@ -15,6 +15,7 @@ import (
 
 const (
 	clarifaiApi = "https://api.clarifai.com/v2/models/aaa03c23b3724a16a56b629203edc62c/outputs"
+	clarifyAuth = "https://api.clarifai.com/v1/token"
 )
 
 type Server struct {
@@ -163,10 +164,8 @@ func fetchTags(c *gin.Context) {
 }
 
 func getRequestBody(input string) (*http.Request, error) {
-	CLARIFAI_ID := os.Getenv("CLARIFAI_CLIENT_ID")
-	CLARIFAI_SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
 
-	clarifai_token := getAccesToken(CLARIFAI_ID, CLARIFAI_SECRET_KEY)
+	clarifai_token := getAccesToken()
 	// for now, figure out how to make it one struct
 	type Base struct {
 		Value string `json:"base64"`
@@ -203,9 +202,11 @@ func getRequestBody(input string) (*http.Request, error) {
 	return req, nil
 }
 
-func getAccesToken(CLIENT_ID string, SECRET_KEY string) AccessToken {
+func getAccesToken() AccessToken {
+	CLARIFAI_ID := os.Getenv("CLARIFAI_CLIENT_ID")
+	CLARIFAI_SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
 
-	responseData := authRequest(CLIENT_ID, SECRET_KEY)
+	responseData := authRequest(CLARIFAI_ID, CLARIFAI_SECRET_KEY)
 	var token AccessToken
 	rawIn := json.RawMessage(responseData)
 
@@ -229,8 +230,7 @@ func getAccesToken(CLIENT_ID string, SECRET_KEY string) AccessToken {
 
 func authRequest(CLIENT_ID string, SECRET_KEY string) []byte {
 
-	var auth_url = "https://api.clarifai.com/v1/token"
-	resp, err := http.PostForm(auth_url, url.Values{"grant_type": {"client_credentials"},
+	resp, err := http.PostForm(clarifyAuth, url.Values{"grant_type": {"client_credentials"},
 		"client_id": { CLIENT_ID },
 		"client_secret": { SECRET_KEY } })
 
