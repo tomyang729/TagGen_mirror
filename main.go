@@ -16,15 +16,12 @@ func main() {
 		fmt.Print("Error loading .env file")
 	}
 
-	clarifai := NewClarifaiClient()
-	clarifai.RefreshAccesToken()
-
 	server := &Server{
-		app:      app,
-		clarifai: clarifai,
+		app:    app,
 	}
 
 	server.Configure()
 	app.Run(":5050")
 
 }
+
