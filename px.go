@@ -7,9 +7,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
-
 	"strings"
-
 	"github.com/joho/godotenv"
 )
 
@@ -25,7 +23,7 @@ type TotalItems struct {
 	CurrentPage int `json:"current_page"`
 }
 
-func getPxTags(tags []ClarifyTag) ([]string, error) {
+func getPxTags(tags []ImageTag) ([]string, error) {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Print("Error loading .env file")
