@@ -21,15 +21,16 @@ func showHomePage(c *gin.Context) {
  */
 func fetchTags(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
+
 	if err != nil {
-		fmt.Print("Error1")
+		fmt.Printf("Error--read file: %s", err)
 	}
 	var request struct {
 		Image string `json:"image"`
 	}
 	err = json.Unmarshal(body, &request)
 	if err != nil {
-		fmt.Printf("Error2: body: %s", body)
+		fmt.Printf("Error--parse json: %s", err)
 	}
 
 	// TODO: somehow refresh token before it expires, without waiting for a request on an expired token

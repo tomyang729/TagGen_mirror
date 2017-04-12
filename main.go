@@ -10,7 +10,7 @@ import (
 // Clarifai client and 500PX client singleton
 // To keep it simple, make them global so that we don't need to pass them around
 var CLFclient = NewClarifaiClient()
-//var PxClient = NewPxClient()  // TODO: later, after refactor px.go
+//var PxClient = NewPxClient()  // TODO: later, if we want to post photos to 500px
 
 func main() {
 	// Create router
