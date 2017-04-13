@@ -37,16 +37,16 @@ func NewClarifaiClient() *ClarifaiClient {
 }
 
 // Check whether the client still has access rights to Clarifai
-func isCLFAccessible(client *ClarifaiClient) bool {
-	if !client.Access || client.Expiry <= 0 {
-		client.Access = false
+func isCLFAccessible() bool {
+	if !CLFclient.Access || CLFclient.Expiry <= 0 {
+		CLFclient.Access = false
 		return false
 	}
 	return true
 }
 
 // Refresh the access token
-func refreshCLFToken(client *ClarifaiClient) {
+func refreshCLFToken() {
 	CLARIFAI_ID := os.Getenv("CLARIFAI_CLIENT_ID")
 	CLARIFAI_SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
 
@@ -74,9 +74,9 @@ func refreshCLFToken(client *ClarifaiClient) {
 	fmt.Printf("Token: %v\n", token.Token)
 	fmt.Printf("Expiry: %v\n", token.Expiry)
 
-	client.Token = token.Token
-	client.Expiry = token.Expiry
-	client.Access = true
+	CLFclient.Token = token.Token
+	CLFclient.Expiry = token.Expiry
+	CLFclient.Access = true
 
 }
 
@@ -101,7 +101,7 @@ func authRequest(CLIENT_ID string, SECRET_KEY string) []byte {
 }
 
 // Get the tags from the Clarifai API
-func getImageTagsFromCLF(image string, client *ClarifaiClient) ([]ImageTag, error) {
+func getImageTagsFromCLF(image string) ([]ImageTag, error) {
 	requestBody, err := getRequestBody(image)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func getImageTagsFromCLF(image string, client *ClarifaiClient) ([]ImageTag, erro
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", `Bearer `+client.Token)
+	req.Header.Add("Authorization", `Bearer `+ CLFclient.Token)
 	req.Header.Add("Content-Type", `application/json`)
 
 	c := &http.Client{}
