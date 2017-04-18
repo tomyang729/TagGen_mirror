@@ -25,7 +25,7 @@ type ClarifaiClient struct {
 	Access bool
 }
 
-type ClarifyTag struct {
+type ImageTag struct {
 	Name  string  `json:"name"`
 	Value float64 `json:"value"`
 }
@@ -37,7 +37,7 @@ func NewClarifaiClient() *ClarifaiClient {
 }
 
 // Check whether the client still has access rights to Clarifai
-func (client *ClarifaiClient) isAccess() bool {
+func (client *ClarifaiClient) isAccessible() bool {
 	if !client.Access || client.Expiry <= 0 {
 		client.Access = false
 		return false
@@ -46,7 +46,7 @@ func (client *ClarifaiClient) isAccess() bool {
 }
 
 // Refresh the access token
-func (client *ClarifaiClient) RefreshAccesToken() {
+func (client *ClarifaiClient) refreshToken() {
 	CLARIFAI_ID := os.Getenv("CLARIFAI_CLIENT_ID")
 	CLARIFAI_SECRET_KEY := os.Getenv("CLARIFAI_SECRET_KEY")
 
@@ -101,7 +101,7 @@ func authRequest(CLIENT_ID string, SECRET_KEY string) []byte {
 }
 
 // Get the tags from the Clarifai API
-func (client *ClarifaiClient) GetTags(image string) ([]ClarifyTag, error) {
+func (client *ClarifaiClient) getImageTags(image string) ([]ImageTag, error) {
 	requestBody, err := getRequestBody(image)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (client *ClarifaiClient) GetTags(image string) ([]ClarifyTag, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", `Bearer `+client.Token)
+	req.Header.Add("Authorization", `Bearer `+ client.Token)
 	req.Header.Add("Content-Type", `application/json`)
 
 	c := &http.Client{}
@@ -175,9 +175,9 @@ func getRequestBody(input string) (*bytes.Buffer, error) {
 }
 
 // Get image tag array from Clarifai's API response
-func getImageTagsArray(jsonStr string) ([]ClarifyTag, error) {
+func getImageTagsArray(jsonStr string) ([]ImageTag, error) {
 	type TagsObj struct {
-		Tags []ClarifyTag `json:"concepts"`
+		Tags []ImageTag `json:"concepts"`
 	}
 
 	type ClarifaiData struct {
@@ -206,8 +206,8 @@ func getImageTagsArray(jsonStr string) ([]ClarifyTag, error) {
 	return filterImageTags(tagsArray), nil
 }
 
-// clarifaiTags is a slice of ClarifyTag. Used for sorting / filtering
-type clarifaiTags []ClarifyTag
+// clarifaiTags is a slice of ImageTag. Used for sorting / filtering
+type clarifaiTags []ImageTag
 
 func (slice clarifaiTags) Len() int {
 	return len(slice)
@@ -222,7 +222,7 @@ func (slice clarifaiTags) Swap(i, j int) {
 }
 
 func (slice clarifaiTags) Filter(val float64) clarifaiTags {
-	filtered := make([]ClarifyTag, 0, slice.Len())
+	filtered := make([]ImageTag, 0, slice.Len())
 	for _, tag := range slice {
 		if tag.Value >= val {
 			filtered = append(filtered, tag)
@@ -232,7 +232,7 @@ func (slice clarifaiTags) Filter(val float64) clarifaiTags {
 }
 
 // Filter tags based on minScore, sort, and trim if there are more than maxTas
-func filterImageTags(tags clarifaiTags) []ClarifyTag {
+func filterImageTags(tags clarifaiTags) []ImageTag {
 	tags = tags.Filter(minValue)
 
 	sort.Sort(tags)

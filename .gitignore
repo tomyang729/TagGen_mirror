@@ -2,6 +2,9 @@
 /node_modules
 /bin
 
+# git-crypt
+tegGenKey
+
 # testing
 /coverage
 
@@ -12,7 +15,7 @@
 TagGen
 
 #js
-/resources/static/js/bin
+resources/static/js/bin/
 
 .idea/
 # misc

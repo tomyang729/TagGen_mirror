@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"net/url"
+	"strconv"
+)
 
-	"strings"
-
-	"github.com/joho/godotenv"
+const (
+	pxApi = "https://api.500px.com/v1/photos/search/?"
+	rpp = 50
 )
 
 type Photo struct {
@@ -25,37 +28,30 @@ type TotalItems struct {
 	CurrentPage int `json:"current_page"`
 }
 
-func getPxTags(tags []ClarifyTag) ([]string, error) {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Print("Error loading .env file")
-		return nil, err
-	}
+func getPxTags(tags []ImageTag) ([]string, error) {
+
 	token := os.Getenv("PX_CONSUMER_KEY")
 
 	totalTags := 0
 	allTags := make(map[string]*TagData)
 	for _, tag := range tags {
 		//make sure to change rpp back to 100
-		resp, err := http.Get("https://api.500px.com/v1/photos/search?term=" + strings.Replace(tag.Name, " ", "%20", -1) + "&tags=true&rpp=50&consumer_key=" + token)
+		requestUrl := constructUrl(tag, token)
+		resp, err := http.Get(requestUrl)
 		if err != nil {
 			fmt.Print("Unable to retrieve photos for " + tag.Name)
 			return nil, err
 		}
 
 		body, err := ioutil.ReadAll(resp.Body)
-		fmt.Printf("%s\n", body)
 		rawIn := json.RawMessage(body)
 		bytes, err := rawIn.MarshalJSON()
-		// fmt.Printf("%s\n", bytes)
 		if err != nil {
 			fmt.Print("something went bad\n")
 			return nil, err
 		}
 		var response Photos
-		fmt.Printf("%s\n", bytes)
 		parseErr := json.Unmarshal(bytes, &response)
-		fmt.Print(response.Data)
 		if parseErr != nil {
 			fmt.Printf("%s\n", bytes)
 			fmt.Print("Unable to parse the px response for " + tag.Name + "\n")
@@ -97,6 +93,15 @@ func getPxTags(tags []ClarifyTag) ([]string, error) {
 	return topTags, nil
 }
 
+func constructUrl(tag ImageTag, token string) string {
+	params := url.Values{}
+	params.Add("term", tag.Name)
+	params.Add("tags", "true")
+	params.Add("rpp", strconv.Itoa(rpp))
+	params.Add("consumer_key", token)
+	return pxApi + params.Encode()
+}
+
 func sortAlgo(wordFrequencies map[string]*TagData, totalTags int) PairList {
 	pl := make(PairList, len(wordFrequencies))
 	i := 0
@@ -104,16 +109,6 @@ func sortAlgo(wordFrequencies map[string]*TagData, totalTags int) PairList {
 		pl[i] = Pair{k, v}
 		ratioUses := float64(pl[i].Value.TagUses) / float64(totalTags)
 		pl[i].Value.SuperSecretValue = ratioUses * float64(pl[i].Value.TotalViews)
-
-		// if pl[i].Value.TagUses > 10 {
-		// 	fmt.Print(pl[i].Key + " - Tag \n")
-		// 	fmt.Print(pl[i].Value.SuperSecretValue)
-		// 	fmt.Print(" - algo value \n")
-		// 	fmt.Print(pl[i].Value.TotalViews)
-		// 	fmt.Print(" - Total views \n")
-		// 	fmt.Print(pl[i].Value.TagUses)
-		// 	fmt.Print(" - Tag Uses \n \n \n")
-		// }
 		i++
 	}
 	sort.Sort(sort.Reverse(pl))
