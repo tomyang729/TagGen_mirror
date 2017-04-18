@@ -15,7 +15,7 @@ tegGenKey
 TagGen
 
 #js
-/resources/static/js/bin
+resources/static/js/bin/
 
 .idea/
 # misc

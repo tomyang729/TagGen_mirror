@@ -34,10 +34,10 @@ func fetchTags(c *gin.Context) {
 	}
 
 	// TODO: somehow refresh token before it expires, without waiting for a request on an expired token
-	if !isCLFAccessible() {
-		refreshCLFToken()
+	if !CLFclient.isAccessible() {
+		CLFclient.refreshToken()
 	}
-	clarifaiTags, err := getImageTagsFromCLF(request.Image)
+	clarifaiTags, err := CLFclient.getImageTags(request.Image)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return

@@ -7,13 +7,11 @@ import (
 	"html/template"
 )
 
-// Clarifai client and 500PX client singleton
+// Clarifai client singleton
 // To keep it simple, make them global so that we don't need to pass them around
 var CLFclient = NewClarifaiClient()
-//var PxClient = NewPxClient()  // TODO: later, if we want to post photos to 500px
 
 func main() {
-	// Create router
 	router := gin.Default()
 
 	// TODO: Set up environment var (like prod/dev/test)
@@ -26,16 +24,23 @@ func main() {
 		fmt.Print("Error loading .env file")
 	}
 
-	// Load static resources & templates
+	serveStatic(router)
+
+	defineRoutes(router)
+
+	router.Run(":5050")
+}
+
+// Load static resources & templates
+func serveStatic(router *gin.Engine) {
 	customTemplate := template.Must(template.New("main").ParseGlob("resources/templates/base/*.tmpl"))
 	customTemplate.ParseGlob("resources/templates/*.tmpl")
 	router.SetHTMLTemplate(customTemplate)
 	router.Static("/static", "resources/static")
+}
 
-	// Define routes **currently we only have two; it's not necessary to separate it to another file yet
+// Define routes **currently we only have two; it's not necessary to separate it to another file yet
+func defineRoutes(router *gin.Engine) {
 	router.GET("/", showHomePage)
 	router.POST("/getTags", fetchTags)
-
-	// Listen and serve
-	router.Run(":5050")
 }
