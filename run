@@ -1,0 +1,6 @@
+#!/bin/zsh
+cd resources
+./node_modules/.bin/webpack
+cd ..
+go build
+./TagGen
